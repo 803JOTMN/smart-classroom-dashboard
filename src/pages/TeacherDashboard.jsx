@@ -5,11 +5,12 @@ import EnvironmentalCard from '../components/dashboard/EnvironmentalCard';
 import AttendanceCard from '../components/dashboard/AttendanceCard';
 import SecurityCard from '../components/dashboard/SecurityCard';
 import RecentActivityCard from '../components/dashboard/RecentActivityCard';
+
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card.jsx';
 import { Button } from '../components/ui/button.jsx';
 import { Input } from '../components/ui/input.jsx';
 import { Switch } from '../components/ui/switch.jsx';
-import { Settings, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Settings, CheckCircle2, AlertTriangle, ChevronDown, Wifi, WifiOff, Activity } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import moment from 'moment';
 
@@ -24,6 +25,7 @@ export default function TeacherDashboard() {
   const [lastUpdated, setLastUpdated] = useState(moment().format('h:mm:ss A'));
   const [mqttConnected, setMqttConnected] = useState(true);
   const [simulationRunning, setSimulationRunning] = useState(false);
+  const [connectivityExpanded, setConnectivityExpanded] = useState(false);
 
   const [room, setRoom] = useState({
     room_id: 'Room 301',
@@ -97,7 +99,6 @@ export default function TeacherDashboard() {
     // Add system activities for classroom setup
     const setupActivities = [
       { title: 'Air Conditioning Activated', description: 'AC set to 24°C' },
-      { title: 'Fan System Started', description: 'Ceiling fans running at medium speed' },
       { title: 'Lights Turned On', description: 'All classroom lights activated' },
       { title: 'Windows Secured', description: 'All windows closed and locked' }
     ];
@@ -380,6 +381,66 @@ export default function TeacherDashboard() {
           </div>
         )}
 
+        {/* Collapsible Connectivity Section */}
+        <div className="mb-6">
+          <button
+            onClick={() => setConnectivityExpanded(!connectivityExpanded)}
+            className="w-full bg-white border border-slate-200 rounded-2xl p-4 hover:bg-slate-50 transition-colors"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-slate-100 rounded-xl">
+                  <Activity className="w-5 h-5 text-slate-600" />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-semibold text-slate-900">Device Connectivity</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="px-2 py-0.5 rounded-lg text-xs font-medium bg-emerald-100 text-emerald-700">
+                      18/18 Online
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${connectivityExpanded ? 'rotate-180' : ''}`} />
+            </div>
+          </button>
+          
+          {connectivityExpanded && (
+            <div className="bg-white border border-slate-200 border-t-0 rounded-b-2xl p-4 -mt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                {[
+                  'Temperature Sensor',
+                  'Humidity Sensor',
+                  'Air Quality Sensor',
+                  'CO2 Sensor',
+                  'Light Level Sensor',
+                  'Sound Level Sensor',
+                  'Motion Sensor',
+                  'Door Lock System',
+                  'Face Scanner',
+                  'Camera Feed #1',
+                  'Camera Feed #2',
+                  'Sprinkler System',
+                  'Fire Detection System',
+                  'Emergency Siren',
+                  'Emergency Light System',
+                  'Classroom Lights',
+                  'Air Conditioning',
+                  'Window Control System'
+                  ].map((device, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                    <div className="flex items-center gap-2">
+                      <Wifi className="w-4 h-4 text-emerald-500" />
+                      <p className="text-sm font-medium text-slate-900">{device}</p>
+                    </div>
+                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Main Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
           <EnvironmentalCard 
@@ -524,13 +585,12 @@ export default function TeacherDashboard() {
                       setAlertAcknowledged(false);
                       setHotWeatherBanner(true);
 
-                      const weatherActions = [
+                      const hotWeatherActions = [
                         { title: 'AC Temperature Lowered', description: 'AC adjusted to 18°C for cooling' },
-                        { title: 'Lights Turned On', description: 'All classroom lights activated' },
                         { title: 'Windows Secured', description: 'All windows closed to maintain cooling' }
                       ];
 
-                      for (const action of weatherActions) {
+                      for (const action of hotWeatherActions) {
                         addActivityLog({
                           room_id: 'Room 301',
                           event_type: 'system',
@@ -587,7 +647,6 @@ export default function TeacherDashboard() {
 
                       const freezingActions = [
                         { title: 'AC Temperature Increased', description: 'AC adjusted to 26°C for heating' },
-                        { title: 'Lights Turned On', description: 'All classroom lights activated' },
                         { title: 'Windows Secured', description: 'All windows closed to maintain heating' }
                       ];
 
@@ -655,13 +714,24 @@ export default function TeacherDashboard() {
                         sprinkler_active: true
                       });
                       setFireAlarmBanner(true);
-                      
-                      addActivityLog({
-                        room_id: 'Room 301',
-                        event_type: 'alert',
-                        title: 'Fire Activated',
-                        description: 'Emergency evacuation protocol initiated - Sprinklers activated'
-                      });
+
+                      const fireActions = [
+                        { title: 'Fire Detected', description: 'Emergency evacuation protocol initiated' },
+                        { title: 'Emergency Lights Activated', description: 'Emergency lighting system engaged' },
+                        { title: 'Door Unlocked', description: 'Main entrance unlocked for evacuation' },
+                        { title: 'Windows Opened', description: 'All windows opened for ventilation' },
+                        { title: 'Sprinkler System Active', description: 'Fire suppression system engaged' },
+                        { title: 'Alarm Sirens Activated', description: 'Emergency siren system activated' }
+                      ];
+
+                      for (const action of fireActions) {
+                        addActivityLog({
+                          room_id: 'Room 301',
+                          event_type: 'alert',
+                          title: action.title,
+                          description: action.description
+                        });
+                      }
                     }}
                     variant="outline"
                     size="sm"

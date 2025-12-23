@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, AlertTriangle, UserCheck, Shield, Users } from 'lucide-react';
+import { Clock, AlertTriangle, UserCheck, Shield, Users, Activity } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card.jsx';
 
 
@@ -18,7 +18,7 @@ export default function RecentActivityCard({ activities }) {
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold text-slate-900">Recent Activity</CardTitle>
           <div className="p-2 bg-slate-100 rounded-xl">
-            <Activity className="w-5 h-5 text-slate-600" />
+            <Clock className="w-5 h-5 text-slate-600" />
           </div>
         </div>
       </CardHeader>
