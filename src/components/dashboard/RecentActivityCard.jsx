@@ -1,13 +1,14 @@
 import React from 'react';
 import { Activity, AlertTriangle, UserCheck, Shield, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card.jsx';
-import { Button } from '../ui/button.jsx';
+
 
 const iconMap = {
   alert: { icon: AlertTriangle, bg: 'bg-amber-100', color: 'text-amber-600' },
   checkin: { icon: UserCheck, bg: 'bg-emerald-100', color: 'text-emerald-600' },
   security: { icon: Shield, bg: 'bg-blue-100', color: 'text-blue-600' },
   attendance: { icon: Users, bg: 'bg-purple-100', color: 'text-purple-600' },
+  system: { icon: Activity, bg: 'bg-slate-100', color: 'text-slate-600' },
 };
 
 export default function RecentActivityCard({ activities }) {
@@ -21,7 +22,7 @@ export default function RecentActivityCard({ activities }) {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="max-h-96 overflow-y-auto space-y-3 pr-2">
         {activities.map((activity, index) => {
           const IconConfig = iconMap[activity.event_type] || iconMap.alert;
           const Icon = IconConfig.icon;
@@ -32,15 +33,15 @@ export default function RecentActivityCard({ activities }) {
                 <Icon className={`w-4 h-4 ${IconConfig.color}`} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-900">{activity.title}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-medium text-slate-900">{activity.title}</p>
+                  <span className="text-xs text-slate-400 whitespace-nowrap">{activity.timestamp}</span>
+                </div>
                 <p className="text-xs text-slate-500 mt-0.5">{activity.description}</p>
               </div>
             </div>
           );
         })}
-        <Button variant="outline" className="w-full mt-2">
-          View All Activity
-        </Button>
       </CardContent>
     </Card>
   );

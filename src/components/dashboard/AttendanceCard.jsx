@@ -13,6 +13,7 @@ export default function AttendanceCard({
   sessionEnd 
 }) {
   const attendancePercentage = (studentCount / expectedStudents) * 100;
+  const absentCount = expectedStudents - studentCount;
 
   return (
     <Card className="border-0 shadow-sm bg-white rounded-2xl overflow-hidden">
@@ -51,7 +52,10 @@ export default function AttendanceCard({
             <span className="text-sm font-semibold text-slate-900">{studentCount}/{expectedStudents}</span>
           </div>
           <Progress value={attendancePercentage} className="h-2" />
-          <p className="text-xs text-slate-500">{attendancePercentage.toFixed(0)}% attendance</p>
+          <div className="flex items-center justify-between text-xs text-slate-500">
+            <span>{attendancePercentage.toFixed(0)}% attendance</span>
+            <span>{absentCount} absent</span>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 text-xs text-slate-500 pt-2">

@@ -37,7 +37,7 @@ export default function AlertBanner({ show, temperature, triggeredTime, roomId, 
             </div>
             <Button 
               onClick={onAcknowledge}
-              className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-6 h-11 font-medium transition-all duration-200 hover:scale-[1.02]"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-6 h-11 font-medium transition-all duration-200 hover:scale-[1.02]"
             >
               Acknowledge
             </Button>
