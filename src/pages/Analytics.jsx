@@ -4,8 +4,14 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, R
 import { TrendingUp, Activity, Users, Thermometer } from 'lucide-react';
 import moment from 'moment';
 
-// Mock data generator for local development
-const generateMockData = () => {
+// Load data from localStorage or generate mock data
+const loadEnvironmentalData = () => {
+  const stored = localStorage.getItem('environmentalData');
+  if (stored) {
+    const data = JSON.parse(stored);
+    if (data.length > 0) return data;
+  }
+  // Fallback to mock data
   const data = [];
   for (let i = 0; i < 20; i++) {
     data.push({
@@ -35,19 +41,38 @@ const mockEventData = [
 ];
 
 export default function Analytics() {
-  const [liveData, setLiveData] = useState(generateMockData());
+  const [liveData, setLiveData] = useState(loadEnvironmentalData());
 
-  // Simulate real-time updates
+  // Live updates: check dashboard data and generate continuous readings
   useEffect(() => {
     const interval = setInterval(() => {
       setLiveData(prev => {
+        // Check if dashboard updated data
+        const stored = localStorage.getItem('environmentalData');
+        let baseData = prev;
+        if (stored) {
+          const dashboardData = JSON.parse(stored);
+          if (dashboardData.length > 0) {
+            baseData = dashboardData;
+          }
+        }
+        
+        // Get last reading or defaults
+        const lastReading = baseData[baseData.length - 1] || {
+          temperature: 24,
+          humidity: 50,
+          pm25: 15
+        };
+        
+        // Generate new point with slight variation from last reading
         const newPoint = {
           time: moment().format('HH:mm:ss'),
-          temperature: 22 + Math.random() * 6,
-          humidity: 45 + Math.random() * 15,
-          pm25: 10 + Math.random() * 20,
+          temperature: Math.max(10, Math.min(50, lastReading.temperature + (Math.random() - 0.5) * 2)),
+          humidity: Math.max(20, Math.min(90, lastReading.humidity + (Math.random() - 0.5) * 3)),
+          pm25: Math.max(5, Math.min(200, lastReading.pm25 + (Math.random() - 0.5) * 5))
         };
-        const updated = [...prev, newPoint];
+        
+        const updated = [...baseData, newPoint];
         return updated.slice(-20);
       });
     }, 5000);
@@ -55,6 +80,7 @@ export default function Analytics() {
     return () => clearInterval(interval);
   }, []);
 
+  // Process data for charts
   const environmentalData = liveData;
   const attendanceData = mockAttendanceData;
   const eventData = mockEventData;
@@ -70,6 +96,7 @@ export default function Analytics() {
           <p className="text-sm text-slate-600 mt-1">Real-time insights and trends for Room 301</p>
         </div>
 
+        {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
           <Card className="border-0 shadow-sm bg-gradient-to-br from-blue-50 to-blue-100">
             <CardContent className="pt-6">
@@ -126,6 +153,7 @@ export default function Analytics() {
           </Card>
         </div>
 
+        {/* Environmental Trends */}
         <Card className="border-0 shadow-sm bg-white rounded-2xl overflow-hidden mb-6">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-slate-900">Environmental Trends (Last 20 readings)</CardTitle>
@@ -155,6 +183,7 @@ export default function Analytics() {
         </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Attendance Trends */}
           <Card className="border-0 shadow-sm bg-white rounded-2xl overflow-hidden">
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-slate-900">Attendance Trends</CardTitle>
@@ -182,6 +211,7 @@ export default function Analytics() {
             </CardContent>
           </Card>
 
+          {/* Event Distribution */}
           <Card className="border-0 shadow-sm bg-white rounded-2xl overflow-hidden">
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-slate-900">Event Distribution</CardTitle>

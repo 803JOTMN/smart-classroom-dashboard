@@ -56,7 +56,20 @@ export default function TeacherDashboard() {
   const [activityList, setActivityList] = useState([]);
 
   const updateRoomData = (updates) => {
-    setRoom(prev => ({ ...prev, ...updates }));
+    setRoom(prev => {
+      const newRoom = { ...prev, ...updates };
+      // Save environmental data to localStorage
+      const envData = {
+        time: moment().format('HH:mm:ss'),
+        temperature: newRoom.temperature,
+        humidity: newRoom.humidity,
+        pm25: newRoom.pm25
+      };
+      const existing = JSON.parse(localStorage.getItem('environmentalData') || '[]');
+      const updated = [...existing, envData].slice(-20);
+      localStorage.setItem('environmentalData', JSON.stringify(updated));
+      return newRoom;
+    });
     setLastUpdated(moment().format('h:mm:ss A'));
     toast.success('Data updated');
   };
