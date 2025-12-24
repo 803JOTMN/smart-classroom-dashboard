@@ -55,8 +55,6 @@ export default function TeacherDashboard() {
 
   const [activityList, setActivityList] = useState([]);
 
-
-
   const updateRoomData = (updates) => {
     setRoom(prev => ({ ...prev, ...updates }));
     setLastUpdated(moment().format('h:mm:ss A'));
